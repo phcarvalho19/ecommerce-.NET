@@ -1,0 +1,8 @@
+C:\Users\pevr\OneDrive - GFT Technologies SE\Documents\estudos\c#\eccomerce-microservices\order-service\obj\Debug\net9.0\order-service.csproj.AssemblyReference.cache
+C:\Users\pevr\OneDrive - GFT Technologies SE\Documents\estudos\c#\eccomerce-microservices\order-service\obj\Debug\net9.0\rpswa.dswa.cache.json
+C:\Users\pevr\OneDrive - GFT Technologies SE\Documents\estudos\c#\eccomerce-microservices\order-service\obj\Debug\net9.0\order-service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\pevr\OneDrive - GFT Technologies SE\Documents\estudos\c#\eccomerce-microservices\order-service\obj\Debug\net9.0\order-service.AssemblyInfoInputs.cache
+C:\Users\pevr\OneDrive - GFT Technologies SE\Documents\estudos\c#\eccomerce-microservices\order-service\obj\Debug\net9.0\order-service.AssemblyInfo.cs
+C:\Users\pevr\OneDrive - GFT Technologies SE\Documents\estudos\c#\eccomerce-microservices\order-service\obj\Debug\net9.0\order-service.csproj.CoreCompileInputs.cache
+C:\Users\pevr\OneDrive - GFT Technologies SE\Documents\estudos\c#\eccomerce-microservices\order-service\obj\Debug\net9.0\order-service.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\pevr\OneDrive - GFT Technologies SE\Documents\estudos\c#\eccomerce-microservices\order-service\obj\Debug\net9.0\order-service.MvcApplicationPartsAssemblyInfo.cache

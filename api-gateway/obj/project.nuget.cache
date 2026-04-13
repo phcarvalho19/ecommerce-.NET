@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "rJVlp7Q1H5I=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\pevr\\OneDrive - GFT Technologies SE\\Documents\\estudos\\c#\\eccomerce-microservices\\api-gateway\\api-gateway.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\pevr\\.nuget\\packages\\system.io.hashing\\8.0.0\\system.io.hashing.8.0.0.nupkg.sha512",
+    "C:\\Users\\pevr\\.nuget\\packages\\yarp.reverseproxy\\2.3.0\\yarp.reverseproxy.2.3.0.nupkg.sha512"
+  ],
+  "logs": []
+}
