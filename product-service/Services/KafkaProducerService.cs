@@ -7,7 +7,8 @@ namespace product_service.Services
     public class KafkaProducerService
     {
         private readonly IProducer<Null, string> _producer;
-        private const string Topic = "product-created";
+        private const string TopicProductCreated = "product-created";
+        private const string TopicOrderRejected = "order-rejected";
 
         public KafkaProducerService(IConfiguration config)
         {
@@ -23,7 +24,17 @@ namespace product_service.Services
         {
             var message = JsonSerializer.Serialize(productEvent);
 
-            await _producer.ProduceAsync(Topic, new Message<Null, string>
+            await _producer.ProduceAsync(TopicProductCreated, new Message<Null, string>
+            {
+                Value = message
+            });
+        }
+
+        public async Task PublishOrderRejected(OrderRejectedEvent rejectedEvent)
+        {
+            var message = JsonSerializer.Serialize(rejectedEvent);
+
+            await _producer.ProduceAsync(TopicOrderRejected, new Message<Null, string>
             {
                 Value = message
             });

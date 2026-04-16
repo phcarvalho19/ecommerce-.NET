@@ -71,8 +71,33 @@ namespace order_service.Kafka
             }
             else
             {
-                Console.WriteLine($"⚠️ Produto já existe: {product.Name}");
+                var existingProduct = await db.AvailableProducts
+                    .FirstOrDefaultAsync(p => p.Id == product.Id, stoppingToken);
+
+                if (existingProduct == null)
+                {
+                    // Se por algum motivo o "exists" ficou desatualizado, volta a garantir consistência.
+                    db.AvailableProducts.Add(product);
+                    await db.SaveChangesAsync(stoppingToken);
+                    Console.WriteLine($"✅ Produto salvo (fallback): {product.Name}");
+                    // Não interromper o consumer; apenas seguimos o processamento normal.
+                }
+                else
+                {
+
+                // Atualiza dados e principalmente o estoque local do order-service.
+                existingProduct.Name = product.Name;
+                existingProduct.Price = product.Price;
+                existingProduct.Stock = product.Stock;
+
+                await db.SaveChangesAsync(stoppingToken);
+                Console.WriteLine($"✅ Produto atualizado: {product.Name} (Stock: {product.Stock})");
+                }
             }
+        }
+        catch (OperationCanceledException)
+        {
+            break;
         }
         catch (ConsumeException ex)
         {
@@ -81,7 +106,14 @@ namespace order_service.Kafka
         catch (Exception ex)
         {
             Console.WriteLine($"❌ Erro geral: {ex.Message}");
-            await Task.Delay(3000, stoppingToken);
+            try
+            {
+                await Task.Delay(3000, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
     }
 

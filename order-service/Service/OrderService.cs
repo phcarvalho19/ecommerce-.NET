@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using order_service.Data;
 using order_service.DTO;
+using order_service.Kafka;
 using order_service.Model;
 
 namespace order_service.Service
@@ -13,12 +14,16 @@ namespace order_service.Service
     {
         private readonly AppDbContext _context;
 
-        public OrderService(AppDbContext context)
+        private readonly OrderProducerService _producer;
+
+
+        public OrderService(AppDbContext context, OrderProducerService producer)
         {
             _context = context;
+            _producer = producer;
         }
 
-        public async Task<Order> CreateOrder(OrderDTO dto, int userId)
+     public async Task<Order> CreateOrder(OrderDTO dto, int userId)
 {
     if (dto.Quantity <= 0)
         throw new Exception("Quantidade inválida");
@@ -42,10 +47,19 @@ namespace order_service.Service
     };
 
     _context.Orders.Add(order);
+
     await _context.SaveChangesAsync();
 
+    // 🔥 PUBLICA EVENTO PARA O PRODUCT SERVICE
+    await _producer.PublishOrderEvent(new OrderCreatedEvent
+    {
+        ProductId = product.Id,
+        Quantity = dto.Quantity,
+        Action = "Created"
+    });
+
     return order;
-}   
+}
 
         public async Task<List<Order>> GetOrdersByUser(int userId)
         {
@@ -76,6 +90,9 @@ namespace order_service.Service
             
         }
 
+
+    
+
     public async Task<AvailableProduct?> GetProductByName(string name)
 {
     return await _context.AvailableProducts
@@ -84,8 +101,21 @@ namespace order_service.Service
 
         public async Task Delete(Order order)
         {
+            var product = await _context.AvailableProducts
+                .FirstOrDefaultAsync(p => p.Name == order.ProductName);
+
+            if (product == null)
+                throw new Exception("Produto do pedido não encontrado para estorno de estoque");
+
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
+
+            await _producer.PublishOrderEvent(new OrderCreatedEvent
+            {
+                ProductId = product.Id,
+                Quantity = order.Quantity,
+                Action = "Cancelled"
+            });
         }
     }
 }

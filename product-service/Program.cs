@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using product_service.Configurations;
 using product_service.Services;
+using product_service.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +55,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 builder.Services.AddSingleton<KafkaProducerService>();
+
+builder.Services.AddHostedService<OrderConsumerService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

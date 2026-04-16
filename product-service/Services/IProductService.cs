@@ -8,10 +8,12 @@ namespace product_service.Services
 {
     public interface IProductService
     {
-    Task<List<Product>> GetProducts();
-    Task<Product> GetProduct(int id);
-    Task<Product> CreateProduct(Product product);
-    Task UpdateProduct(Product product);
-    Task DeleteProduct(int id);
+        Task<List<Product>> GetProducts();
+        Task<Product> GetProduct(int id);
+        Task<Product> CreateProduct(Product product);
+        Task UpdateProduct(Product product);
+        Task DeleteProduct(int id);
+        Task<bool> ReduceStockAsync(int productId, int quantity);
+        Task<bool> IncreaseStockAsync(int productId, int quantity);
     }
 }

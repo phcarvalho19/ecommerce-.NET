@@ -35,6 +35,22 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+  kafka-init:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka-init
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "
+      echo 'Aguardando Kafka ficar pronto...';
+      cub kafka-ready -b kafka:9092 1 60 &&
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic order-created --replication-factor 1 --partitions 1 &&
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic product-created --replication-factor 1 --partitions 1 &&
+      echo 'Topicos Kafka criados/verificados com sucesso.'
+      "
 
   auth-service:
     build: ./auth-service
@@ -54,6 +70,7 @@ services:
     depends_on:
       - mysql
       - kafka
+      - kafka-init
 
   order-service:
     build: ./order-service
@@ -64,6 +81,7 @@ services:
     depends_on:
       - mysql
       - kafka
+      - kafka-init
 
   api-gateway:
     build: ./api-gateway

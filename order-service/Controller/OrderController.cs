@@ -55,40 +55,56 @@ namespace order_service.Controller
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMyOrders()
+    public async Task<IActionResult> GetMyOrders()
+    {
+        var userId = GetUserId();
+
+        List<Order> orders;
+
+        if (User.IsInRole("Admin"))
+            orders = await _service.GetAllOrders();
+        else
+            orders = await _service.GetOrdersByUser(userId);
+
+        if (!orders.Any())
+            return NotFound(new { message = "Nenhum pedido feito" });
+
+        var result = orders.Select(o => new OrderResponseDTO
         {
-            var userId = GetUserId();
+            Id = o.Id,
+            ProductName = o.ProductName,
+            Price = o.Price,
+            Quantity = o.Quantity
+        });
 
-            List<Order> orders;
+        return Ok(result);
+    }
 
-            if (User.IsInRole("Admin"))
-                orders = await _service.GetAllOrders();
-            else
-                orders = await _service.GetOrdersByUser(userId);
+     [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var userId = GetUserId();
 
-            if (orders == null || !orders.Any())
-                return NotFound(new { message = "Nenhum pedido feito" });
+        var order = await _service.GetById(id);
 
-            return Ok(orders);
-        }
+        if (order == null)
+            return NotFound(new { message = "Pedido não encontrado" });
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        var isAdmin = User.IsInRole("Admin");
+
+        if (!isAdmin && order.UserId != userId)
+            return Forbid();
+
+        var result = new OrderResponseDTO
         {
-            var userId = GetUserId();
+            Id = order.Id,
+            ProductName = order.ProductName,
+            Price = order.Price,
+            Quantity = order.Quantity
+        };
 
-            var order = await _service.GetById(id);
-
-            if (order == null)
-                return NotFound(new { message = "Pedido não encontrado" });
-
-            var isAdmin = User.IsInRole("Admin");
-
-            if (!isAdmin && order.UserId != userId)
-                return Forbid();
-
-            return Ok(order);
-        }
+        return Ok(result);
+    }
 
        [HttpPut("{id}")]
 [Authorize(Policy = "User")]

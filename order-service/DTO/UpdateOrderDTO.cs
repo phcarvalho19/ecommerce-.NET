@@ -8,5 +8,6 @@ namespace order_service.DTO
     public class UpdateOrderDTO
     {
         public int Quantity {get; set; }
+        
     }
 }
